@@ -195,20 +195,37 @@ jobs:
         device: [e100, e200, e300, e1000, ugw3, ugw4, ugwxg]
         version: [1, 2]
         arch: [mips]
+        platform: [edge, unifi]
         exclude:
+          - device: ugw3
+            platform: edge
+          - device: ugw4
+            platform: edge
+          - device: ugwxg
+            platform: edge        
           - device: ugw3
             version: 2
           - device: ugw4
             version: 2
           - device: ugwxg
             version: 2
+          - device: e100
+            platform: unifi
+          - device: e100
+            platform: unifi
+          - device: e200
+            platform: unifi
+          - device: e300
+            platform: unifi            
         include:
           - device: e50
             version: 1
             arch: mipsel
+            platform: edge
           - device: e50
             version: 2
             arch: mipsel
+            platform: edge            
     steps:
       - uses: actions/checkout@v2
       - name: Download module
@@ -226,7 +243,8 @@ jobs:
           export KERNEL=$(modinfo -F vermagic wireguard.ko | cut -d ' ' -f 1)
           mkdir -p pkg/usr/bin pkg/lib/modules/$KERNEL/kernel/net
           cp -r debian pkg/DEBIAN
-          cp -r opt pkg/opt
+          cp -r platform/default/opt pkg
+          cp -r platform/${{ matrix.platform }}/opt pkg
           cp wireguard.ko pkg/lib/modules/$KERNEL/kernel/net/wireguard.ko
           cp wg pkg/usr/bin/wg
           chmod +x pkg/usr/bin/wg
